@@ -6,7 +6,7 @@
  * @flow
  */
 
-import React, {Fragment} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -24,10 +24,29 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import ToastExample from './ToastExample';
-//import StripeTerminalAndroid from './StripeTerminalModule';
+import Permissions from 'react-native-permissions';
+
+import StripeTerminalModule from './StripeTerminalModule';
 
 const App = () => {
+  const [location, setLocation] = useState('');
+
+  useEffect(() => {
+    _requestPermission();
+  });
+
+  _requestPermission = () => {
+    Permissions.request('location').then(response => {
+      // Returns once the user has chosen to 'allow' or to 'not allow' access
+      // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
+      setLocation(response);
+    });
+  };
+
+  StripeTerminalModule.initialize(
+    'https://stripeterminalbackendtest.herokuapp.com',
+  );
+
   return (
     <Fragment>
       <StatusBar barStyle="dark-content" />
@@ -44,7 +63,9 @@ const App = () => {
           <View style={styles.body}>
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionDescription}>
-                {ToastExample.getName()}
+                {location}
+                {/*StripeTerminalModule.show('hi', 10000000000)*/}
+                {/*StripeTerminalModule.show('hi', 10000000)*/}
               </Text>
             </View>
           </View>

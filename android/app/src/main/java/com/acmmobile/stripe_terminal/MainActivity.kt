@@ -1,13 +1,18 @@
 package com.acmmobile
 
 import android.Manifest
+import android.annotation.TargetApi
+import android.app.Activity
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AppCompatActivity
 import com.stripe.stripeterminal.*
+import com.facebook.react.bridge.ReactApplicationContext
+import android.util.Log
 
 class MainActivity2 : AppCompatActivity(), NavigationListener, TerminalStateManager,
         ReaderDisplayListener, ReaderSoftwareUpdateListener {
@@ -34,10 +39,10 @@ class MainActivity2 : AppCompatActivity(), NavigationListener, TerminalStateMana
         setContentView(R.layout.activity_main)
 
         // Check that the example app has been configured correctly
-        if (ApiClient.BACKEND_URL.isEmpty()) {
+        /*if (ApiClient.BACKEND_URL.isEmpty()) {
             throw RuntimeException("You need to set the BACKEND_URL constant in ApiClient.kt " +
                     "before you'll be able to use the example app.")
-        }
+        }*/
 
         // Initialize the simulated flag
         if (savedInstanceState != null) {
@@ -47,7 +52,7 @@ class MainActivity2 : AppCompatActivity(), NavigationListener, TerminalStateMana
         // Check for location permissions
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            safeInitialize()
+            //safeInitialize()
         } else {
             // If we don't have them yet, request them before doing anything else
             val permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -73,7 +78,7 @@ class MainActivity2 : AppCompatActivity(), NavigationListener, TerminalStateMana
     ) {
         // If we receive a response to our permission check, initialize
         if (requestCode == REQUEST_CODE_LOCATION) {
-            initialize()
+            //init()
         }
     }
 
@@ -367,23 +372,34 @@ class MainActivity2 : AppCompatActivity(), NavigationListener, TerminalStateMana
      * A version of initialize that is safe to call multiple times, and can be called
      * even if the Terminal has been initialized previously
      */
-    private fun safeInitialize() {
+    @TargetApi(Build.VERSION_CODES.CUR_DEVELOPMENT)
+    fun safeInitialize(URL: String, reactContext: ReactApplicationContext) {
         try {
-            Terminal.getInstance()
-            // Terminal has already been initialized, ignore...
+            init(URL, reactContext)
+            // Check for location permissions
+            if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+                // If we don't have them yet, request them before doing anything else
+                val permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+                //reactContext.currentActivity.requestPermissions(this, permissions, REQUEST_CODE_LOCATION)
+            }
+            // Terminal has already been initialized, ignore...*/
         } catch (e: IllegalStateException) {
             // Terminal has not been initialized, so do so now
-            initialize()
+            //init("https://stripeterminalbackendtest.herokuapp.com")
         }
     }
 
     /**
      * Initialize the [Terminal] and go to the [TerminalFragment]
      */
-    private fun initialize() {
+    private fun init(URL: String, reactContext: ReactApplicationContext) {
         // Initialize the Terminal as soon as possible
         try {
-            Terminal.initTerminal(applicationContext, LogLevel.VERBOSE, TokenProvider(),
+            val applicationContext = reactContext.getApplicationContext()
+            Terminal.initTerminal(applicationContext, LogLevel.VERBOSE, TokenProvider(URL),
                     TerminalEventListener())
         } catch (e: TerminalException) {
             throw RuntimeException("Location services are required in order to initialize " +

@@ -21,19 +21,20 @@ object ApiClient {
      *
      * const val BACKEND_URL = "https://your-app.herokuapp.com"
      */
-    const val BACKEND_URL = "https://stripeterminalbackendtest.herokuapp.com"
-
-    private val client = OkHttpClient()
-    private val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl(BACKEND_URL)
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    private val service: BackendService = retrofit.create(BackendService::class.java)
+    //val backendURL = "https://stripeterminalbackendtest.herokuapp.com"
 
     @Throws(ConnectionTokenException::class)
-    internal fun createConnectionToken(): String {
+    internal fun createConnectionToken(URL: String): String {
         try {
+            val client = OkHttpClient()
+            val backendURL: String = URL
+            val retrofit: Retrofit = Retrofit.Builder()
+                    .baseUrl(backendURL)
+                    .client(client)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+            val service = retrofit.create(BackendService::class.java)
+
             val result = service.getConnectionToken().execute()
             if (result.isSuccessful && result.body() != null) {
                 return result.body()!!.secret
@@ -46,6 +47,6 @@ object ApiClient {
     }
 
     internal fun capturePaymentIntent(id: String) {
-        service.capturePaymentIntent(id).execute()
+        //service.capturePaymentIntent(id).execute()
     }
 }

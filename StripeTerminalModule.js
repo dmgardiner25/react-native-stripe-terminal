@@ -1,2 +1,2 @@
 import { NativeModules } from 'react-native';
-module.exports = NativeModules.StripeTerminalReactPackage;
+module.exports = NativeModules.StripeTerminalModule;
