@@ -14,7 +14,7 @@
     "node": "^12.4.0",
     "nvm": "0.0.4",
     "react": "16.8.6",
-    "react-native": "0.60.4",
+    "react-native": "0.62.3",
     "react-native-create-bridge": "^2.0.1",
     "react-native-permissions": "^1.2.0"
   },
